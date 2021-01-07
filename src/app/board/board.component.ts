@@ -4,6 +4,7 @@ import { Game } from 'src/shared/logic/game-logic';
 import { Piece, PieceColor } from 'src/shared/models/piece';
 import { Player } from 'src/shared/models/player';
 import { GameService } from 'src/shared/services/game.service';
+import { WebsocketService } from "src/shared/services/websocket.service";
 import { ClearOpenSquares } from 'src/shared/utilities/clearOpenSquares';
 
 interface Board {
@@ -18,7 +19,7 @@ export class BoardModel {
     styleUrls: ['./board.component.scss']
 })
 export class BoardComponent implements Board {
-    constructor(private _gameService: GameService) { }
+    constructor(private _gameService: GameService, private _webSocketService: WebsocketService) { }
     checked;
     public board = new BoardModel().board;
     private activePiece: ActivePiece
@@ -28,10 +29,10 @@ export class BoardComponent implements Board {
         this.Create();
         // this._gameService.game.subscribe(data => {
         //     console.log(data);
-            
+
         // })
     }
-    sendBoard(){
+    sendBoard() {
         // this._gameService.sendGame(this.board);
     }
     Create() {
@@ -60,13 +61,22 @@ export class BoardComponent implements Board {
                 console.log(this.game.currentPlayer)
                 this.cachedPiece = undefined;
             }
+            // this._webSocketService.listen('connection').subscribe(data => {
+            //     console.log(data);
+            //     console.log('hi');
+
+            // })
+            this._webSocketService.emit('board', this.board)
+            // console.log('yo');
+            
+            // this._webSocketService.emit('yo', 'yo')
 
         }
         else {
             ClearOpenSquares(this.board)
         }
         // console.log(this.board);
-        
+
     }
     getOtherColor(color: PieceColor): PieceColor {
         return color == PieceColor.black ? PieceColor.white : PieceColor.black

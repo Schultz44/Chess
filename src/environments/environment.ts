@@ -4,7 +4,7 @@
 
 export const environment = {
   production: false,
-  ws_url: 'ws://localhost:3000'
+  SOCKET_ENDPOINT: 'ws://localhost:3000'
 };
 
 /*

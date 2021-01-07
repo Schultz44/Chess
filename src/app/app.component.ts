@@ -10,13 +10,7 @@ export class AppComponent {
   title = 'Chess';
   constructor(private _webSocketService: WebsocketService){}
   ngOnInit(){
-    console.log('App');
-    
-    // this._webSocketService.listen('board object').subscribe(data => {
-    //   console.log(data);
-    //   console.log('hi');
-      
-    //   // this._webSocketService.emit('board object', {})
-    // })
+    this._webSocketService.setupSocketConnection();
+    // this._webSocketService.emit('yo', 'yo')
   }
 }
