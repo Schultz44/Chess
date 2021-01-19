@@ -1,5 +1,15 @@
-<p>
-  lobby works!
-</p>
+
+<h3>{{currentRoom}}</h3>
+<br>
+Chess Username: <input type="text" name="username" id="username" [(ngModel)]="username">
+<br>
+<br>
 <button routerLink="/game" routerLinkActive="active">Start Game</button>
 <button (click)="function()">Websocket</button>
+<br>
+<input type="text" name="" id="" [(ngModel)]="lobbyName">
+<button (click)="createLobby()">Create new game</button>
+
+<br>
+
+<div *ngFor="let room of rooms">{{room.roomName}}</div>

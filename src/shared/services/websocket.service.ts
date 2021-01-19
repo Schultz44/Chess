@@ -3,7 +3,8 @@ import { Injectable } from "@angular/core";
 import { io, Socket } from 'socket.io-client';
 import * as Rx from 'rxjs';
 import { environment } from '../../environments/environment';
-import { Observable } from 'rxjs/internal/Observable';
+import { Observable } from 'rxjs';
+// import { Observable } from 'rxjs/internal/Observable';
 import { AnonymousSubject } from 'rxjs/internal/Subject';
 import { Subject } from 'rxjs/internal/Subject';
 
@@ -12,7 +13,8 @@ export class WebsocketService {
 
     private socket: Socket; // socket that connects to our socket.io server
     private lobbySocket: Socket;
-
+    rooms = [];
+    currentRoom;
     constructor() { }
     setupSocketConnection() {
         this.socket = io(environment.SOCKET_ENDPOINT);
@@ -36,14 +38,55 @@ export class WebsocketService {
         //     console.log(data);
         // });
     }
+    createRoom(user, room) {
+        console.log(user);
+        
+        this.lobbySocket.emit('Create Room', { username: user, room: room })
+        this.currentRoom = room;
+        this.lobbySocket.on('Created Room', data => {
+            console.log(data);
+        })
+    }
     createLobbyNamespace() {
         if (this.lobbySocket) {
             this.lobbySocket.close()
         }
         this.lobbySocket = io(environment.SOCKET_ENDPOINT + '/lobby');
-        this.lobbySocket.on('join', () => {
-            console.log('Joined lobby');
+        this.lobbySocket.on('Available Rooms', data => {
+            this.rooms = data
+            console.log(data);
         })
+        // This is placed here because the other users connected to the lobby arent connected to the room to see the existing rooms
+        this.lobbySocket.on('Room Events', data => {
+            this.rooms.push(data);
+            console.log(data);
+        })
+
+
+
+
+
+        // TODO
+        // Make is so only 1 room can be created per connection
+        // Only 2 connections can be in 1 room at a time
+        // Setup a way to leave a room
+
+
+
+
+
+
+
+        // this.lobbySocket.on('join', (data) => {
+        //     console.log(data);
+        // })
+        // this.lobbySocket.emit('leave', '')
+        // this.lobbySocket.emit('Join Room', {room: 'room-1', username: 'User 1' })
+        // this.lobbySocket.on('Joined', data => {console.log(data);
+        // })
+        // this.lobbySocket.on('connectToRoom', (data) => {
+        //     console.log(data);
+        // })
     }
     listen(eventName: string) {
         return new Observable((subscriber) => {
