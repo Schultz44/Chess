@@ -1,8 +1,8 @@
 <!-- Board -->
 <button routerLink="/lobby">Back To Lobby</button>
 <div class="board">
-    <div *ngFor="let y of board; let i = index" class="row">
-        <div *ngFor="let piece of board[i]; let j = index"
+    <div *ngFor="let y of game.board; let i = index" class="row">
+        <div *ngFor="let piece of game.board[i]; let j = index"
             class="cell {{((i+j) / 2) % 1 == 0 ? 'odd' : 'even'}} {{piece?.defenseless ? 'open' : ''}}"
             (click)="clickedSquare(piece, i, j)">
             <!-- Piece -->
@@ -18,10 +18,10 @@
         </div>
     </div>
 </div>
-<div class="player-info">
-    <span *ngIf="game.player2.checked">Check</span>
-    <div class="player {{game.player2.turn ? 'active-turn' : ''}} ">Player2</div>
+<div class="player-info" (click)="l()">
+    <span *ngIf="player2?.checked">Check</span>
+    <div class="player {{player2?.turn ? 'active-turn' : ''}} ">{{player2?.playerName}}</div>
     <div class="filler"></div>
-    <span *ngIf="game.player1.checked">Check</span>
-    <div class="player {{game.player1.turn ? 'active-turn' : ''}} ">Player1</div>
+    <span *ngIf="player1.checked">Check</span>
+    <div class="player {{player1.turn ? 'active-turn' : ''}} ">{{player1.playerName}}</div>
 </div>

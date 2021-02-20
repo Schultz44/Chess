@@ -4,6 +4,7 @@ export class Player{
     constructor(data = {}){
         Object.assign(this, data)
     }
+    public playerName: string;
     public turn: boolean;
     public previousTurns = [];
     public lostPieces: Piece[] = [];

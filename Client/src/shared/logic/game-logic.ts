@@ -1,25 +1,19 @@
-import { BoardModel } from 'src/app/board/board.component';
+
 import { BlackBishop, BlackKing, BlackKnight, BlackPond, BlackQueen, BlackRook, WhiteBishop, WhiteKing, WhiteKnight, WhitePond, WhiteQueen, WhiteRook } from '../models/BuildPieces';
-import { Piece, PieceColor, PieceNames } from '../models/piece';
-import { Player } from '../models/player';
-import { ClearOpenSquares } from '../utilities/clearOpenSquares';
-import { Bishop } from './bishop';
-import { King } from './king';
-import { Knight } from './knight';
-import { Pond } from './pond';
-import { Rook } from './rook';
+import { Piece } from '../models/piece';
 
-export class Game {
 
-    public player1: Player;
-    public player2: Player;
-    public currentPlayer: Player;
+export class GameLogic {
+
+    // public player1: Player;
+    // public player2: Player;
+    // public currentPlayer: Player;
 
     NewGame(board: [Piece[], Piece[]]): [Piece[], Piece[]] {
         let gameBoard = board
-        this.player1 = new Player({ color: PieceColor.white, turn: true });
-        this.player2 = new Player({ color: PieceColor.black });
-        this.currentPlayer = this.player1
+        // this.player1 = new Player({ color: PieceColor.white, turn: true });
+        // this.player2 = new Player({ color: PieceColor.black });
+        // this.currentPlayer = this.player1
         for (let i = 0; i < board.length; i++) {
             for (let j = 0; j < board.length; j++) {
                 for (const piece of this.startingPieces) {
@@ -32,21 +26,24 @@ export class Game {
                 }
             }
         }
+        console.log(board);
+
         return board
     }
-    changePlayersTurn() {
-        if (this.currentPlayer.turn == this.player1.turn) {
-            this.currentPlayer = this.player2
-            this.player1.turn = false
-            this.player2.turn = true
-        } else {
-            this.currentPlayer = this.player1
-            this.player2.turn = false;
-            this.player1.turn = true
-        }
-    }
+    // changePlayersTurn() {
+    //     if (this.currentPlayer.turn == this.player1.turn) {
+    //         this.currentPlayer = this.player2
+    //         this.player1.turn = false
+    //         this.player2.turn = true
+    //     } else {
+    //         this.currentPlayer = this.player1
+    //         this.player2.turn = false;
+    //         this.player1.turn = true
+    //     }
+    // }
     private readonly startingPieces = [
         // Pond
+        // Black
         new BlackPond({ x: 0 }),
         new BlackPond({ x: 1 }),
         new BlackPond({ x: 2 }),
@@ -55,6 +52,7 @@ export class Game {
         new BlackPond({ x: 5 }),
         new BlackPond({ x: 6 }),
         new BlackPond({ x: 7 }),
+        // White
         new WhitePond({ x: 0 }),
         new WhitePond({ x: 1 }),
         new WhitePond({ x: 2 }),

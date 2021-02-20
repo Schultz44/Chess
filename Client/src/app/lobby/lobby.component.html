@@ -1,5 +1,5 @@
 
-<h3>{{currentRoom}}</h3>
+<!-- <h3>{{currentRoom}}</h3> -->
 <br>
 Chess Username: <input type="text" name="username" id="username" [(ngModel)]="username">
 <br>
@@ -8,8 +8,14 @@ Chess Username: <input type="text" name="username" id="username" [(ngModel)]="us
 <button (click)="function()">Websocket</button>
 <br>
 <input type="text" name="" id="" [(ngModel)]="lobbyName">
-<button (click)="createLobby()">Create new game</button>
+<button (click)="createRoom()">Create new game</button>
 
 <br>
 
-<div *ngFor="let room of rooms">{{room.roomName}}</div>
+<div *ngFor="let room of rooms" (click)="joinRoom(room)">{{room.roomName}}</div>
+
+<br>
+<button (click)="showRooms()">Rooms</button>
+
+<br>
+<button (click)="leaveRoom()">Leave</button>

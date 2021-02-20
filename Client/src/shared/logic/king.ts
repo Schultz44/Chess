@@ -1,12 +1,11 @@
 import { Piece, PieceColor } from '../models/piece';
 import { CheckSqaureState } from '../utilities/checkSquareState';
 // import { ActivePiece } from './active-player';
-import { Game } from './game-logic';
 
 export class King {
     private piece: Piece;
     private board: [Piece[], Piece[]];
-    private game = new Game();
+    // private game = new Game();
     constructor(private _piece: Piece, private _board: [Piece[], Piece[]]) {
         this.piece = _piece;
         this.board = _board
