@@ -18,8 +18,6 @@ export class ActivePiece {
     private board: [Piece[], Piece[]];
     constructor(_board: [Piece[], Piece[]]) {
         this.board = _board;
-        console.log('Create Active Piece Class');
-
         this.blackKing = _board[new BlackKing().y][new BlackKing().x]
         this.whiteKing = _board[new WhiteKing().y][new WhiteKing().x]
 

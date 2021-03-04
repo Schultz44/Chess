@@ -1,5 +1,5 @@
 import { Component } from "@angular/core";
-import { ActivePiece, EnumPieceAction } from 'src/shared/logic/active-player';
+import { ActivePiece, EnumPieceAction } from 'src/shared/logic/active-piece';
 import { GameLogic } from 'src/shared/logic/game-logic';
 import { Game } from "src/shared/models/board";
 import { Piece, PieceColor } from 'src/shared/models/piece';
@@ -21,7 +21,7 @@ export class BoardComponent implements Board {
     constructor(private _gameService: GameService, private _webSocketService: WebsocketService) { }
     checked;
     // public board = new BoardModel();
-    private activePiece: ActivePiece
+    // private activePiece: ActivePiece
     public gameLogic = new GameLogic();
     cachedPiece: Piece;
 
@@ -43,7 +43,7 @@ export class BoardComponent implements Board {
         //     console.log(data);
 
         // })
-        this.game.room = this._webSocketService.game.room;
+        // this.game.room = this._webSocketService.game.room;
     }
     sendBoard() {
         // this._gameService.sendGame(this.board);
@@ -56,27 +56,35 @@ export class BoardComponent implements Board {
             }
         }
         this.gameLogic.NewGame(this.game.board)
-        this.activePiece = new ActivePiece(this.game.board);
+        // this. = new ActivePiece(this.game.board);
         
     }
     clickedSquare(square: Piece, y?, x?) {
         // this.sendBoard()
         console.log(this.currentPlayer);
+        console.log(square);
+        console.log(this.currentPlayer.turn && square !== null);
         
         if (this.currentPlayer.turn && square !== null) {
             if (!square?.defenseless && this.currentPlayer.color == square?.color) {
+                console.log('Caching the Piece');
+                
                 this.cachedPiece = square
                 ClearOpenSquares(this.game.board)
-                this.activePiece.ShowSquares(square, EnumPieceAction.show);
+                new ActivePiece(this.game.board).ShowSquares(square, EnumPieceAction.show);
             }
 
             if (square?.defenseless || (square === undefined && this.cachedPiece)) {
-                this.activePiece.ShowSquares(this.cachedPiece, EnumPieceAction.move, y, x)
+                console.log('-------------');
+                
+                new ActivePiece(this.game.board).ShowSquares(this.cachedPiece, EnumPieceAction.move, y, x)
+                this.checked = new ActivePiece(this.game.board).isKingInCheck(this.currentPlayer.color, this.currentPlayer);
                 this.changePlayersTurn()
-                this.checked = this.activePiece.isKingInCheck(this.currentPlayer.color, this.currentPlayer);
+                console.log(this.cachedPiece);
+                this._webSocketService.emitLobby('Played Piece', {piece: this.cachedPiece, room: this.game.room})
+                // this._webSocketService.emitLobby('Emit Board State', this.game);
+                // this._webSocketService.listenLobby('Emit Opponent').subscribe(data => console.log(data))
                 this.cachedPiece = undefined;
-                this._webSocketService.emitLobby('Emit Board State', this.game);
-                this._webSocketService.listenLobby('Emit Opponent').subscribe(data => console.log(data))
             }
             // this._webSocketService.listen('connection').subscribe(data => {
             //     console.log(data);
@@ -95,9 +103,9 @@ export class BoardComponent implements Board {
         // console.log(this.board);
 
     }
-    getOtherColor(color: PieceColor): PieceColor {
-        return color == PieceColor.black ? PieceColor.white : PieceColor.black
-    }
+    // getOtherColor(color: PieceColor): PieceColor {
+    //     return color == PieceColor.black ? PieceColor.white : PieceColor.black
+    // }
     // isPlayerActive(player: Player): boolean {
     //     if (this.game.currentPlayer.turn == this.game.player1.turn) {
 

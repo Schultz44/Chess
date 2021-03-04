@@ -11,6 +11,7 @@ import { generateRandomstring } from "../utilities/generateRandomString";
 import { Player } from "../models/player";
 import { Room } from "../models/room";
 import { Game } from "../models/board";
+import { Piece, PieceColor } from "../models/piece";
 
 @Injectable({ providedIn: 'root' })
 export class WebsocketService {
@@ -101,11 +102,14 @@ export class WebsocketService {
             
         })
 
-        this.lobbySocket.on('Update Board State', data => {
-            console.log(data);
-            this.game = data
-            console.log(this.game);
-            
+        this.lobbySocket.on('Update Board State', (data: {piece: Piece, room: Room}) => {
+            console.log(data.piece);
+            this.game.board[data.piece.y][data.piece.x] = data.piece
+            // console.log(this.game);
+            if (this.currentPlayer.color == PieceColor.black) {
+                this.currentPlayer = data.room.player2
+            }
+            else this.currentPlayer = data.room.player1
         })
 
         // TODO
