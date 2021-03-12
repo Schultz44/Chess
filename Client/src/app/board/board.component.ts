@@ -1,10 +1,12 @@
 import { Component } from "@angular/core";
+import { Router } from "@angular/router";
 import { ActivePiece, EnumPieceAction } from 'src/shared/logic/active-piece';
 import { GameLogic } from 'src/shared/logic/game-logic';
+import { Minimax } from "src/shared/logic/minimax";
 import { Game } from "src/shared/models/board";
-import { Piece, PieceColor } from 'src/shared/models/piece';
+import { Piece, PieceColor, } from 'src/shared/models/piece';
 import { Player } from 'src/shared/models/player';
-import { Room } from "src/shared/models/room";
+import { GameStateService } from "src/shared/services/game-state.service";
 import { GameService } from 'src/shared/services/game.service';
 import { WebsocketService } from "src/shared/services/websocket.service";
 import { ClearOpenSquares } from 'src/shared/utilities/clearOpenSquares';
@@ -18,35 +20,48 @@ interface Board {
     styleUrls: ['./board.component.scss']
 })
 export class BoardComponent implements Board {
-    constructor(private _gameService: GameService, private _webSocketService: WebsocketService) { }
+    constructor(
+        private _gameService: GameService,
+        private _webSocketService: WebsocketService,
+        private _gameStateService: GameStateService,
+        private Router: Router
+    ) { }
     checked;
     // public board = new BoardModel();
     // private activePiece: ActivePiece
     public gameLogic = new GameLogic();
     cachedPiece: Piece;
+    previousPieceLocation: { y, x }
 
     public get currentPlayer(): Player {
-        return this._webSocketService.currentPlayer;
+        return this._gameStateService.currentPlayer;
     }
     public get player1(): Player {
-        return this._webSocketService.game.room.player1;
+        return this._gameStateService.game.room.player1;
     }
     public get player2(): Player {
-        return this._webSocketService.game.room.player2;
+        return this._gameStateService.game.room.player2;
     }
-    public get game(): Game{
-        return this._webSocketService.game
+    public get game(): Game {
+        return this._gameStateService.game
     }
-    ngOnInit() {
-        this.Create();
-        // this._gameService.game.subscribe(data => {
-        //     console.log(data);
 
+
+    ngOnInit() {
+        if (this.Router.url.includes('ai')) {
+            this._gameStateService.isAI = true;
+            if (!this._gameStateService.currentPlayer) {
+                this._gameStateService.currentPlayer = new Player({ playerName: 'Human', turn: true, color: PieceColor.white })
+            }
+        }
+        // this.ActivatedRoute.snapshot
+        // this._webSocketService.
+        //     joinRoom(
+        //         JSON.parse(localStorage.getItem('user')),
+        //         JSON.parse(localStorage.getItem('roomName')))
+        //     .then(() => {
+        this.Create();
         // })
-        // this.game.room = this._webSocketService.game.room;
-    }
-    sendBoard() {
-        // this._gameService.sendGame(this.board);
     }
     Create() {
         for (let i = 0; i < 8; i++) {
@@ -56,80 +71,48 @@ export class BoardComponent implements Board {
             }
         }
         this.gameLogic.NewGame(this.game.board)
-        // this. = new ActivePiece(this.game.board);
-        
     }
     clickedSquare(square: Piece, y?, x?) {
-        // this.sendBoard()
-        console.log(this.currentPlayer);
-        console.log(square);
-        console.log(this.currentPlayer.turn && square !== null);
-        
         if (this.currentPlayer.turn && square !== null) {
             if (!square?.defenseless && this.currentPlayer.color == square?.color) {
-                console.log('Caching the Piece');
-                
                 this.cachedPiece = square
                 ClearOpenSquares(this.game.board)
                 new ActivePiece(this.game.board).ShowSquares(square, EnumPieceAction.show);
+                this.previousPieceLocation = { y: square.y, x: square.x }
             }
-
             if (square?.defenseless || (square === undefined && this.cachedPiece)) {
-                console.log('-------------');
-                
+                // Moves the cachePiece
                 new ActivePiece(this.game.board).ShowSquares(this.cachedPiece, EnumPieceAction.move, y, x)
                 this.checked = new ActivePiece(this.game.board).isKingInCheck(this.currentPlayer.color, this.currentPlayer);
-                this.changePlayersTurn()
-                console.log(this.cachedPiece);
-                this._webSocketService.emitLobby('Played Piece', {piece: this.cachedPiece, room: this.game.room})
-                // this._webSocketService.emitLobby('Emit Board State', this.game);
-                // this._webSocketService.listenLobby('Emit Opponent').subscribe(data => console.log(data))
+                this._gameStateService.changePlayersTurn()
+                if (this._gameStateService.isAI) {
+                    Minimax(this._gameStateService.game.board)
+                }
+                else {
+                    this._webSocketService.emitLobby('Played Piece',
+                        { piece: this.cachedPiece, room: this.game.room, previousPieceLocation: this.previousPieceLocation }
+                    )
+                    this.currentPlayer.turn = false
+                }
                 this.cachedPiece = undefined;
             }
-            // this._webSocketService.listen('connection').subscribe(data => {
-            //     console.log(data);
-            //     console.log('hi');
-
-            // })
-            // this._webSocketService.emit('board', this.board)
-            // console.log('yo');
-
-            // this._webSocketService.emit('yo', 'yo')
-
         }
         else {
             ClearOpenSquares(this.game.board)
         }
-        // console.log(this.board);
 
     }
-    // getOtherColor(color: PieceColor): PieceColor {
-    //     return color == PieceColor.black ? PieceColor.white : PieceColor.black
-    // }
-    // isPlayerActive(player: Player): boolean {
-    //     if (this.game.currentPlayer.turn == this.game.player1.turn) {
 
-    //     }
-    //     return false
-    // }
-    changePlayersTurn() {
-        if (this.player1.turn) {
-            this.player1.turn = false
-            this.player2.turn = true
-        } else {
-            this.player2.turn = false;
-            this.player1.turn = true
-        }
-    }
     l() {
         let table = { Player1: undefined, Player2: undefined, CurrentPlayer: undefined }
         table.Player1 = this.player1
         table.Player2 = this.player2
         table.CurrentPlayer = this.currentPlayer
         console.table(table)
-        // console.log(this.player1);
-        // console.log(this.player2);
-        // console.log(this.currentPlayer);
+        console.table(this.game.board)
+    }
 
+    checkUsers() {
+        this._webSocketService.emitLobby('Game Users', this.game);
     }
 }

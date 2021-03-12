@@ -18,4 +18,5 @@ export class Piece{
     image: string;
     defenseless: boolean;
     hasMoved: boolean;
+    pieceValue = 0;
 }

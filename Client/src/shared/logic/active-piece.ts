@@ -100,7 +100,7 @@ export class ActivePiece {
                 }
             })
         })
-        const flag = pieceColor == PieceColor.black ? this.blackKing.defenseless : this.whiteKing.defenseless
+        const flag = pieceColor == PieceColor.black ? this.blackKing?.defenseless : this.whiteKing?.defenseless
         if (player && flag) {
             player.checked = true;
         }

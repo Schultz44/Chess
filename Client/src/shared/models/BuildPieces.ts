@@ -9,6 +9,7 @@ export class BlackPond implements Piece {
     image = './assets/img/pond-active.svg';
     defenseless = false;
     hasMoved = false;
+    pieceValue = 1
     constructor(data = {}) {
         Object.assign(this, data);
     }
@@ -21,6 +22,7 @@ export class WhitePond implements Piece {
     image = './assets/img/pond-active.svg';
     defenseless = false;
     hasMoved = false;
+    pieceValue = 1
     constructor(data = {}) {
         Object.assign(this, data)
     }
@@ -34,6 +36,7 @@ export class BlackRook implements Piece {
     image = './assets/img/rook-active.svg';
     defenseless = false;
     hasMoved = false;
+    pieceValue = 5
     constructor(data = {}) {
         Object.assign(this, data);
     }
@@ -46,6 +49,7 @@ export class WhiteRook implements Piece {
     image = './assets/img/rook-active.svg';
     defenseless = false;
     hasMoved = false;
+    pieceValue = 5
     constructor(data = {}) {
         Object.assign(this, data)
     }
@@ -59,6 +63,7 @@ export class BlackKnight implements Piece {
     image = './assets/img/knight-active.svg';
     defenseless = false;
     hasMoved = false;
+    pieceValue = 3
     constructor(data = {}) {
         Object.assign(this, data);
     }
@@ -71,6 +76,7 @@ export class WhiteKnight implements Piece {
     image = './assets/img/knight-active.svg';
     defenseless = false;
     hasMoved = false;
+    pieceValue = 3
     constructor(data = {}) {
         Object.assign(this, data)
     }
@@ -84,6 +90,7 @@ export class BlackBishop implements Piece {
     image = './assets/img/bishop-active.svg';
     defenseless = false;
     hasMoved = false;
+    pieceValue = 3
     constructor(data = {}) {
         Object.assign(this, data);
     }
@@ -96,6 +103,7 @@ export class WhiteBishop implements Piece {
     image = './assets/img/bishop-active.svg';
     defenseless = false;
     hasMoved = false;
+    pieceValue = 3
     constructor(data = {}) {
         Object.assign(this, data)
     }
@@ -109,6 +117,7 @@ export class BlackKing implements Piece {
     image = './assets/img/king-active.svg';
     defenseless = false;
     hasMoved = false;
+    pieceValue = 100
     constructor(data = {}) {
         Object.assign(this, data);
     }
@@ -121,6 +130,7 @@ export class WhiteKing implements Piece {
     image = './assets/img/king-active.svg';
     defenseless = false;
     hasMoved = false;
+    pieceValue = 100
     constructor(data = {}) {
         Object.assign(this, data)
     }
@@ -134,6 +144,7 @@ export class BlackQueen implements Piece {
     image = './assets/img/queen-active.svg';
     defenseless = false;
     hasMoved = false;
+    pieceValue = 9
     constructor(data = {}) {
         Object.assign(this, data);
     }
@@ -146,6 +157,7 @@ export class WhiteQueen implements Piece {
     image = './assets/img/queen-active.svg';
     defenseless = false;
     hasMoved = false;
+    pieceValue = 9
     constructor(data = {}) {
         Object.assign(this, data)
     }

@@ -1,5 +1,6 @@
 <!-- Board -->
 <button routerLink="/lobby">Back To Lobby</button>
+<button (click)="checkUsers()">Check users in game</button>
 <div class="board">
     <div *ngFor="let y of game.board; let i = index" class="row">
         <div *ngFor="let piece of game.board[i]; let j = index"
@@ -23,5 +24,5 @@
     <div class="player {{player2?.turn ? 'active-turn' : ''}} ">{{player2?.playerName}}</div>
     <div class="filler"></div>
     <span *ngIf="player1.checked">Check</span>
-    <div class="player {{player1.turn ? 'active-turn' : ''}} ">{{player1.playerName}}</div>
+    <div class="player {{player1?.turn ? 'active-turn' : ''}} ">{{player1.playerName}}</div>
 </div>

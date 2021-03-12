@@ -7,7 +7,7 @@ Chess Username: <input type="text" name="username" id="username" [(ngModel)]="us
 <button routerLink="/game" routerLinkActive="active">Start Game</button>
 <button (click)="function()">Websocket</button>
 <br>
-<input type="text" name="" id="" [(ngModel)]="lobbyName">
+<input type="text" name="" id="" [(ngModel)]="roomName">
 <button (click)="createRoom()">Create new game</button>
 
 <br>
@@ -19,3 +19,6 @@ Chess Username: <input type="text" name="username" id="username" [(ngModel)]="us
 
 <br>
 <button (click)="leaveRoom()">Leave</button>
+
+<br>
+<button (click)="playAI()">Play AI</button>
