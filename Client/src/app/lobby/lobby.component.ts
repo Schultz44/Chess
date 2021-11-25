@@ -1,10 +1,11 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ɵbypassSanitizationTrustStyle } from '@angular/core';
 import { Router } from '@angular/router';
 import { Observable } from 'rxjs';
 import { PieceColor } from 'src/shared/models/piece';
 import { Player } from 'src/shared/models/player';
 import { Room } from 'src/shared/models/room';
 import { GameStateService } from 'src/shared/services/game-state.service';
+import { UserStateService } from 'src/shared/services/user-state.service';
 import { WebsocketService } from 'src/shared/services/websocket.service';
 import { generateRandomstring } from 'src/shared/utilities/generateRandomString';
 
@@ -17,6 +18,8 @@ export class LobbyComponent implements OnInit {
 
   username: string = 'User 1';
   roomName: string = 'Room 1';
+  hasUserName: boolean;
+  invalidUsernameError: string;
   // currentRoom;
   // rooms: Room[] = [];
   get rooms() {
@@ -25,10 +28,29 @@ export class LobbyComponent implements OnInit {
   constructor(
     private _wsService: WebsocketService, 
     private router: Router,
-    private _gameStateService: GameStateService
-    ) { }
-
+    private _gameStateService: GameStateService,
+    private _userStateService: UserStateService
+    ) { 
+      this._wsService.connected$.subscribe(bool => {
+          this.hasUserName = bool
+          if (!bool) {
+            console.log(this._wsService);
+            
+            this.invalidUsernameError = this._wsService.connectError
+          } else {
+            this.invalidUsernameError = '';
+            this.joinLobby()
+          }
+      })
+        
+    }
   ngOnInit() {
+    if(this._userStateService.user){
+      this.hasUserName = true
+      this.username = this._userStateService.user.username
+    } 
+  }
+  joinLobby(){    
     this._wsService.createLobbyNamespace()
     //Figure out how to get updated data from wsService
     this._gameStateService.rooms.forEach(room => {
@@ -36,17 +58,19 @@ export class LobbyComponent implements OnInit {
       this.rooms.push(new Room({ roomName: room.roomName, player1: room.player1, player2: room.player2 }))
     })
   }
-
-  function() { }
+  makeUser(){
+    this._wsService.connectToSocket(this.username)
+  }
+  // function() { }
   showRooms() {
     this._wsService.getRooms()
   }
   leaveRooms() {
     this._wsService.leaveRooms();
   }
-  leaveRoom() {
-    this._wsService.leaveRoom()
-  }
+  // leaveRoom() {
+  //   this._wsService.leaveRoom()
+  // }
 
   createRoom = (): void => {
     // const r = await this._wsService.createRoom(this.username, this.roomName);

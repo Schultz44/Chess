@@ -1,9 +1,36 @@
 .board{
     position: relative;
-    width: 800px;
-    height: 800px;
+    width: 400px;
+    height: 400px;
     float: left;
+
+    .row{
+        display: flex;
+        float: left;
+        &:nth-child(odd){
+            background-color: brown;
+        }
+    }
+    .cell{
+        position: relative;
+        height: 50px;
+        width: 50px;
+        // border: 1px solid #eee;
+        float: left;
+        &.odd{
+            background-color: #b97430;
+        }
+        &.even{
+            background-color: #6a322f;
+    
+        }
+    }
+    .empty{
+        height: 50px; 
+        width: 50px;
+    }
 }
+
 .player-info{
     float: left;
     height: 800px;
@@ -40,28 +67,4 @@
     height: 96px !important;
     width: 96px !important;
 }
-.row{
-    display: flex;
-    float: left;
-    &:nth-child(odd){
-        background-color: brown;
-    }
-}
-.cell{
-    position: relative;
-    height: 100px;
-    width: 100px;
-    // border: 1px solid #eee;
-    float: left;
-    &.odd{
-        background-color: #b97430;
-    }
-    &.even{
-        background-color: #6a322f;
 
-    }
-}
-.empty{
-    height: 100px; 
-    width: 100px;
-}

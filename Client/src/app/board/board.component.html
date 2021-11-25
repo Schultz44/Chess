@@ -1,6 +1,8 @@
 <!-- Board -->
 <button routerLink="/lobby">Back To Lobby</button>
 <button (click)="checkUsers()">Check users in game</button>
+<button (click)="leaveRoom()">Leave Game</button>
+<button (click)="test()">Test</button>
 <div class="board">
     <div *ngFor="let y of game.board; let i = index" class="row">
         <div *ngFor="let piece of game.board[i]; let j = index"
@@ -9,7 +11,7 @@
             <!-- Piece -->
             <ng-container *ngIf="piece?.y == i && piece?.x == j; else emptyBoard">
                 <image-svg *ngIf="piece.y == i && piece.x == j" [color]="piece.color" [path]="piece.image"
-                    [index]="i.toString() + j.toString()"></image-svg>
+                    [index]="i.toString() + j.toString()" [height]="'50px'" [width]="'50px'"></image-svg>
             </ng-container>
             <!-- Empty Board -->
             <ng-template #emptyBoard>

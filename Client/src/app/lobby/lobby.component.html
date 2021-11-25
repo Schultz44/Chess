@@ -1,24 +1,32 @@
 
 <!-- <h3>{{currentRoom}}</h3> -->
 <br>
-Chess Username: <input type="text" name="username" id="username" [(ngModel)]="username">
+<div *ngIf="!hasUserName">
+    Chess Username: <input type="text" name="username" id="username" [(ngModel)]="username">
+    <button (click)="makeUser()">Create</button>
+</div>
 <br>
+<h3 *ngIf="invalidUsernameError">{{invalidUsernameError}}</h3>
 <br>
-<button routerLink="/game" routerLinkActive="active">Start Game</button>
-<button (click)="function()">Websocket</button>
-<br>
-<input type="text" name="" id="" [(ngModel)]="roomName">
-<button (click)="createRoom()">Create new game</button>
-
-<br>
-
-<div *ngFor="let room of rooms" (click)="joinRoom(room)">{{room.roomName}}</div>
-
-<br>
-<button (click)="showRooms()">Rooms</button>
-
-<br>
-<button (click)="leaveRoom()">Leave</button>
-
-<br>
-<button (click)="playAI()">Play AI</button>
+<div *ngIf="hasUserName">
+    <h3>{{username}}</h3>
+    <!-- What does start game do? -->
+    <button routerLink="/game" routerLinkActive="active">Start Game</button>
+    <!-- <button (click)="function()">Websocket</button> -->
+    <br>
+    <input type="text" name="" id="" [(ngModel)]="roomName">
+    <button (click)="createRoom()">Create new game</button>
+    
+    <br>
+    
+    <div *ngFor="let room of rooms" (click)="joinRoom(room)">{{room.roomName}}</div>
+    
+    <br>
+    <button (click)="showRooms()">Rooms</button>
+    
+    <br>
+    <!-- <button (click)="leaveRoom()">Leave</button> -->
+    
+    <br>
+    <button (click)="playAI()">Play AI</button>
+</div>

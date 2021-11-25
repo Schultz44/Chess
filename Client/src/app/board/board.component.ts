@@ -102,7 +102,10 @@ export class BoardComponent implements Board {
         }
 
     }
-
+    test(){
+        this._webSocketService.listen('Created Room').subscribe(console.log)
+    }
+    
     l() {
         let table = { Player1: undefined, Player2: undefined, CurrentPlayer: undefined }
         table.Player1 = this.player1
@@ -111,7 +114,9 @@ export class BoardComponent implements Board {
         console.table(table)
         console.table(this.game.board)
     }
-
+    leaveRoom(){
+        this._webSocketService.leaveRoom(this.currentPlayer)
+    }
     checkUsers() {
         this._webSocketService.emitLobby('Game Users', this.game);
     }

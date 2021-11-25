@@ -13,19 +13,44 @@ import { Room } from "../models/room";
 import { Game } from "../models/board";
 import { Piece, PieceColor } from "../models/piece";
 import { GameStateService } from "./game-state.service";
+import { UserStateService } from "./user-state.service";
 
 @Injectable({ providedIn: 'root' })
 export class WebsocketService {
 
     private socket: Socket; // socket that connects to our socket.io server
     private lobbySocket: Socket;
-    constructor(private _gameStateService: GameStateService) { }
+    connectError: string;
+    connected$: Observable<boolean>
+    private connectionSubject: Subject<boolean> = new Subject<boolean>();
+    constructor(private _gameStateService: GameStateService, private _userStateService: UserStateService) {
+        this.connected$ = this.connectionSubject.asObservable()
+     }
     setupSocketConnection() {
-        this.socket = io(environment.SOCKET_ENDPOINT);
+        this.socket = io(environment.SOCKET_ENDPOINT, {autoConnect: false});
+        this.socket.onAny((event, ...args) => {
+            console.log(event, ...args)
+        })
         this.socket.on('message', (data) => { console.log(data) })
         this.socket.on('board-object', (data) => {
             console.log(data);
         })
+    }
+    connectToSocket(username: string){
+        this.connectError = undefined;
+        this.socket.auth = {username}
+        this._userStateService.user = {username}
+        this.socket.connect()
+        this.socket.on('invalid_username', (err) => {
+            if (err) {
+                this.connectError = err
+                this.socket.disconnect()
+                this.connectionSubject.next(false)
+            }
+            else{
+                this.connectionSubject.next(true)
+            }
+        });
     }
     getRooms() {
         this.lobbySocket.emit('log rooms', {})
@@ -33,15 +58,14 @@ export class WebsocketService {
     leaveRooms() {
         this.lobbySocket.emit('reset all rooms', {})
     }
-    leaveRoom() {
-        this.lobbySocket.emit('leave room', {})
+    leaveRoom(user: Player) {
+        this.lobbySocket.emit('leave room', user)
     }
     async createRoom(user: Player, roomName: string) {
-        const results = new Promise<void>((resolve, reject) => {
+        const results = new Promise<void>((resolve, reject) => {            
             this.lobbySocket.emit('Create Room', new Room({ player1: user, roomName: roomName, roomKey: generateRandomstring(8) }))
             this.lobbySocket.on('Created Room', (data: Room) => {
-                this._gameStateService.game.room = new Room(data)
-
+                this._gameStateService.game.room = new Room(data)                
                 // console.log(this.game.room);
                 resolve()
             })
@@ -66,10 +90,17 @@ export class WebsocketService {
         // this.lobbySocket.emit()
     }
     createLobbyNamespace() {
-        if (this.lobbySocket) {
-            this.lobbySocket.close()
-        }
-        this.lobbySocket = io(environment.SOCKET_ENDPOINT + '/lobby');
+        
+        // if (this.lobbySocket) {
+        //     this.lobbySocket.close()
+        // }
+        // this.lobbySocket.auth = {t:'Hello'}
+        this.lobbySocket = io(environment.SOCKET_ENDPOINT + '/lobby')
+        this.lobbySocket.auth = [this.connectError]
+        this.lobbySocket.connect()
+        console.log(this.lobbySocket);
+        this.lobbySocket.on('connection',() => console.log('123'));
+        
         this.lobbySocket.on('Available Rooms', data => {
             this._gameStateService.rooms = data
             console.log(data);
@@ -77,6 +108,8 @@ export class WebsocketService {
         // This is placed here because the other users connected to the lobby arent connected to the room to see the existing rooms
         this.lobbySocket.on('Room Events', data => {
             this._gameStateService.rooms.push(data);
+            console.log('ROOM EVENTS');
+            
             console.log(this._gameStateService.rooms);
         })
 
@@ -153,5 +186,10 @@ export class WebsocketService {
         // return Subject.create()
         // return new AnonymousSubject<MessageEvent>(observer, observable)
         return Rx.Subject.create(observer, observable)
+    }
+    ngOnDestroy(): void {
+        //Called once, before the instance is destroyed.
+        //Add 'implements OnDestroy' to the class.
+        this.socket.off('connect_error')
     }
 }
