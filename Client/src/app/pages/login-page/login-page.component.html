@@ -23,7 +23,7 @@
         [background]="_gameService.colorOdd"
       ></app-basic-input>
 
-      <div class="join">
+      <div class="join" (click)="createGuest()">
         <div class="block">
           <div class="face center">Play</div>
           <div class="face center">
@@ -52,7 +52,9 @@
       </div>
     </div>
   </section>
-  <div *ngIf="invalidUsernameError" class="error center">
-    <h3 id="error-message">Username is already taken</h3>
+  <div *ngIf="invalidUsernameError" class="error">
+    <div class="swing center">
+      <h3 id="error-message">{{ invalidUsernameError }}</h3>
+    </div>
   </div>
 </div>
