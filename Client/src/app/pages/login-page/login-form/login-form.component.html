@@ -1,0 +1,23 @@
+<form
+  class="relative center column"
+  [formGroup]="loginForm"
+  (ngSubmit)="onSubmit()"
+>
+  <div id="input-username">
+    <app-basic-input
+      [label]="'Username'"
+      [type]="'text'"
+      (emitValue)="l($event)"
+      [value]="loginForm.value.username"
+    ></app-basic-input>
+  </div>
+  <div id="input-password">
+    <app-basic-input
+      [label]="'Password'"
+      [type]="'password'"
+      (emitValue)="l($event)"
+      [value]="loginForm.value.password"
+    ></app-basic-input>
+  </div>
+  <button class="button" type="submit">Login</button>
+</form>

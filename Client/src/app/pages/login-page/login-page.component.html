@@ -1,0 +1,58 @@
+<div class="relative center login-main">
+  <section id="user-sign-in-container">
+    <div class="title center">
+      <image-svg
+        style="width: 50px; height: 50px"
+        [color]="pond.color"
+        [path]="pond.image"
+        [index]="1"
+        [height]="'50px'"
+        [width]="'50px'"
+      ></image-svg>
+      <div class="wrapper">
+        <div class="typing">Chess</div>
+      </div>
+    </div>
+    <div class="center" *ngIf="isGuest">
+      <app-basic-input
+        (keyup.enter)="createGuest()"
+        [label]="'Username:'"
+        [value]="guestName"
+        (emitValue)="guestName = $event"
+        [max]="20"
+        [background]="_gameService.colorOdd"
+      ></app-basic-input>
+
+      <div class="join">
+        <div class="block">
+          <div class="face center">Play</div>
+          <div class="face center">
+            <div class="jumping-pieces">
+              <image-svg
+                class="piece-1 center"
+                [color]="king.color"
+                [path]="king.image"
+                [index]="2"
+                [height]="'40px'"
+                [width]="'40px'"
+              ></image-svg>
+              <span class="shadow-1"></span>
+              <image-svg
+                class="piece-2 center"
+                [color]="queen.color"
+                [path]="queen.image"
+                [index]="3"
+                [height]="'40px'"
+                [width]="'40px'"
+              ></image-svg>
+              <span class="shadow-2"></span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <div *ngIf="invalidUsernameError" class="error center">
+    <h3 id="error-message">Username is already taken</h3>
+  </div>
+</div>
