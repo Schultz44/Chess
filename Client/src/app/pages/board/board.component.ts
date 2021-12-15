@@ -55,20 +55,24 @@ export class BoardComponent implements Board {
   }
 
   ngOnInit(): void {
-    if (!this._userStateService.user.username) {
-      this.Router.navigate(['/login']);
-      return;
-    }
-    if (this.Router.url.includes('ai')) {
-      this._gameStateService.isAI = true;
-      if (!this._gameStateService.currentPlayer) {
-        this._gameStateService.currentPlayer = new Player({
-          playerName: 'Human',
-          turn: true,
-          color: PieceColor.white,
-        });
-      }
-    }
+    // if (!this._userStateService.user.username) {
+    //   this.Router.navigate(['/login']);
+    //   return;
+    // }
+    /**
+     *
+     *  if (this.Router.url.includes('ai')) {
+     *    this._gameStateService.isAI = true;
+     *    if (!this._gameStateService.currentPlayer) {
+     *      this._gameStateService.currentPlayer = new Player({
+     *        playerName: 'Human',
+     *        turn: true,
+     *        color: PieceColor.white,
+     *      });
+     *    }
+     *  }
+     */
+
     // this.ActivatedRoute.snapshot
     // this._webSocketService.
     //     joinRoom(

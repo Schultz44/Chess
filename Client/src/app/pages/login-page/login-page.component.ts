@@ -35,39 +35,30 @@ export class LoginPageComponent {
     this.Router = Router;
     this._gameService = _gameService;
     this._wsService.disconnectFromSocket();
+    /**
+     * subscribe to the WebSocketService Subject to listen for the stream of data
+     * .next() will trigger the below logic
+     */
     this._wsService.connected$.subscribe((bool) => {
       this.hasUserName = bool;
       if (!bool) {
-        console.log(this._wsService);
         this.invalidUsernameError = this._wsService.connectError;
       } else {
         this.invalidUsernameError = '';
         this.Router.navigate(['/lobby']);
-        // this.joinLobby();
       }
     });
   }
-  // joinLobby(): void {
-  //   this._wsService.createLobbyNamespace();
-  //   //Figure out how to get updated data from wsService
-  //   this._gameStateService.rooms.forEach((room) => {
-  //     console.log(room);
-  //     this.rooms.push(
-  //       new Room({
-  //         roomName: room.roomName,
-  //         player1: room.player1,
-  //         player2: room.player2,
-  //       })
-  //     );
-  //   });
-  // }
 
+  /**
+   * Makes a call to the server to check if name validations
+   * If name is invalid, animate the error message to draw attention to user
+   */
   createGuest(): void {
-    console.log(this.guestName);
-    if (this.invalidUsernameError) {
-      document
-        .getElementById('error-message')
-        .animate(
+    this._wsService.connectToSocket(this.guestName).then((valid) => {
+      const errorElement = document.getElementById('error-message');
+      if (!valid && errorElement) {
+        errorElement.animate(
           [
             { transform: 'rotate(3deg) translateY(0) translateX(0)' },
             { transform: 'rotate(0deg) translateY(2px) translateX(-3px)' },
@@ -76,7 +67,8 @@ export class LoginPageComponent {
           ],
           { duration: 150, iterations: 5 }
         );
-    } else this._wsService.connectToSocket(this.guestName);
+      }
+    });
   }
 
   addBtnAnimation(el: HTMLDivElement): void {

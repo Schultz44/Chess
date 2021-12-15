@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 import { io, Socket } from 'socket.io-client';
 import * as Rx from 'rxjs';
 import { environment } from '../../environments/environment';
-import { Observable } from 'rxjs';
+import { Observable, Observer } from 'rxjs';
 // import { Observable } from 'rxjs/internal/Observable';
 import { AnonymousSubject } from 'rxjs/internal/Subject';
 import { Subject } from 'rxjs/internal/Subject';
@@ -43,19 +43,23 @@ export class WebsocketService {
       console.log(data);
     });
   }
-  connectToSocket(username: string): void {
-    this.connectError = undefined;
-    this.socket.auth = new ClientUser({ username: username });
-    this._userStateService.user = new ClientUser({ username: username });
-    this.socket.connect();
-    this.socket.on('invalid_username', (err) => {
-      if (err) {
-        this.connectError = err;
-        this.socket.disconnect();
-        this.connectionSubject.next(false);
-      } else {
-        this.connectionSubject.next(true);
-      }
+  connectToSocket(username: string): Promise<boolean> {
+    return new Promise((resolve) => {
+      this.connectError = undefined;
+      this.socket.auth = new ClientUser({ username: username });
+      this._userStateService.user = new ClientUser({ username: username });
+      this.socket.connect();
+      this.socket.on('invalid_username', (err) => {
+        if (err) {
+          this.connectError = err;
+          this.socket.disconnect();
+          this.connectionSubject.next(false);
+          resolve(false);
+        } else {
+          this.connectionSubject.next(true);
+          resolve(false);
+        }
+      });
     });
   }
   disconnectFromSocket(): void {

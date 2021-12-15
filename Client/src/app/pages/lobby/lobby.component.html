@@ -6,10 +6,15 @@
   </section>
 </div> -->
 
-<div>
+<div class="relative">
   <h3>{{ username }}</h3>
+
+  <div class="board-container">
+    <app-board></app-board>
+  </div>
+
   <!-- What does start game do? -->
-  <button routerLink="/game" routerLinkActive="active">Start Game</button>
+  <!-- <button routerLink="/game" routerLinkActive="active">Start Game</button> -->
   <!-- <button (click)="function()">Websocket</button> -->
   <br />
   <input type="text" name="" id="" [(ngModel)]="roomName" />
