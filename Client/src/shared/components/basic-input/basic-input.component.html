@@ -1,0 +1,9 @@
+<div class="basic-input {{ value != undefined && value != '' ? 'show' : '' }}">
+  <label [for]="label" [style.backgroundColor]="background">{{ label }}</label>
+  <input
+    [type]="type"
+    (ngModelChange)="emitValue.emit($event)"
+    [ngModel]="value"
+    [maxlength]="max"
+  />
+</div>

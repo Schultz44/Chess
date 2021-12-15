@@ -1,1 +1,25 @@
 /* You can add global styles to this file, and also import other style files */
+$color-odd: var(--odd);
+$color-even: var(--even);
+body {
+  position: fixed;
+  height: 100%;
+  width: 100%;
+  margin: 0;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.relative {
+  position: relative;
+  height: 100%;
+  width: 100%;
+}
+
+.column {
+  flex-direction: column;
+}

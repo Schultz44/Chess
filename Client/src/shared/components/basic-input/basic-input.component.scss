@@ -1,0 +1,76 @@
+.basic-input {
+  position: relative;
+  width: calc(100% - 10px);
+  height: 30px;
+  font-size: 1.2rem;
+  border: 3px solid;
+  margin: 15px 0px;
+  z-index: 2;
+  &::before {
+    position: absolute;
+    content: "";
+    width: 100%;
+    height: calc(100% + 4px);
+    top: -3px;
+    left: 3px;
+    background-color: rgb(185, 116, 48);
+    transition: width 0.2s 0.1s, height 0.2s;
+  }
+  &:focus-within,
+  &.show {
+    label {
+      top: -23px;
+      height: 23px;
+      font-size: 1.2rem;
+    }
+    &::before {
+      width: 0px;
+      height: 3px;
+    }
+  }
+}
+label {
+  position: absolute;
+  height: calc(100% + 3px);
+  // width: calc(100% + 6px);
+  // padding-left: 3px;
+  padding: 0px 5px;
+  font-size: 1.6rem;
+  left: -3px;
+  top: -2px;
+  transition: top 0.3s ease-in-out, width 0.3s 0.15s, height 0.3s,
+    font-size 0.3s;
+}
+input {
+  z-index: 1;
+  position: relative;
+  height: calc(100% - 3px);
+  width: calc(100% - 3px);
+  background-color: transparent;
+  border: unset;
+  font-size: 1.2rem;
+  padding: 3px;
+  // &::after {
+  //   position: absolute;
+  //   content: "";
+  //   height: 100%;
+  //   width: 100%;
+  //   top: 0;
+  //   left: 0;
+  //   border: 3px solid;
+  // }
+  // &::before {
+  //   position: absolute;
+  //   content: "";
+  //   height: 100%;
+  //   width: 100%;
+  //   top: 0;
+  //   left: 0;
+  // }
+  &:focus {
+    outline: unset;
+  }
+  &:hover {
+    cursor: pointer;
+  }
+}

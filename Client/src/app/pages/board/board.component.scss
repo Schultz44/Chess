@@ -1,0 +1,70 @@
+@import "./src/styles.scss";
+
+.board {
+  position: relative;
+  width: 400px;
+  height: 400px;
+  float: left;
+
+  .row {
+    display: flex;
+    float: left;
+    // &:nth-child(odd) {
+    //   background-color: $color-odd;
+    // }
+  }
+  .cell {
+    position: relative;
+    height: 50px;
+    width: 50px;
+    // border: 1px solid #eee;
+    float: left;
+    &.odd {
+      background-color: $color-odd;
+    }
+    &.even {
+      background-color: $color-even;
+    }
+  }
+  .empty {
+    height: 50px;
+    width: 50px;
+  }
+}
+
+.player-info {
+  float: left;
+  height: 800px;
+  width: 100px;
+
+  .filler {
+    height: 700px;
+  }
+  .player {
+    position: relative;
+    height: 50px;
+    font-size: 2rem;
+    display: flex;
+    align-items: center;
+
+    &.active-turn {
+      &::after {
+        content: "";
+        position: absolute;
+        right: -25px;
+        bottom: 20px;
+        height: 15px;
+        width: 15px;
+        border-radius: 100%;
+        background-color: seagreen;
+      }
+    }
+  }
+}
+.open {
+  background-color: #291d1c !important;
+  box-shadow: inset 0 0 0 2px #eee;
+  border: 2px solid transparent;
+  height: 96px !important;
+  width: 96px !important;
+}
