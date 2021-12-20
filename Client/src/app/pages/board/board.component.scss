@@ -19,6 +19,19 @@
     width: 50px;
     // border: 1px solid #eee;
     float: left;
+
+    // background-size: 100%;
+    // cursor: pointer;
+    // cursor: grab;
+    // cursor: -webkit-grab;
+    // height: 12.5%;
+    // left: 0;
+    // overflow: hidden;
+    // position: absolute;
+    // top: 0;
+    // touch-action: none;
+    // width: 12.5%;
+    // will-change: transform;
     &.odd {
       background-color: $color-odd;
     }
