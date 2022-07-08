@@ -15,6 +15,7 @@
     </div>
     <div class="center" *ngIf="isGuest">
       <app-basic-input
+        style="margin: 15px"
         (keyup.enter)="createGuest()"
         [label]="'Username:'"
         [value]="guestName"
@@ -52,9 +53,9 @@
       </div>
     </div>
   </section>
-  <div *ngIf="invalidUsernameError" class="error">
+  <!-- <div *ngIf="invalidUsernameError" class="error">
     <div class="swing center">
       <h3 id="error-message">{{ invalidUsernameError }}</h3>
     </div>
-  </div>
+  </div> -->
 </div>

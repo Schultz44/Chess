@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ElementRef, HostListener, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { ActivePiece, EnumPieceAction } from 'src/shared/logic/active-piece';
 import { GameLogic } from 'src/shared/logic/game-logic';
@@ -8,6 +8,7 @@ import { Piece, PieceColor } from 'src/shared/models/piece';
 import { Player } from 'src/shared/models/player';
 import { GameStateService } from 'src/shared/services/game-state.service';
 import { GameService } from 'src/shared/services/game.service';
+import { LobbySocketService } from 'src/shared/services/lobbySocket.service';
 import { UserStateService } from 'src/shared/services/user-state.service';
 import { WebsocketService } from 'src/shared/services/websocket.service';
 import { ClearOpenSquares } from 'src/shared/utilities/clearOpenSquares';
@@ -21,11 +22,14 @@ interface Board {
   styleUrls: ['./board.component.scss'],
 })
 export class BoardComponent implements Board {
+  @ViewChild('boardContainer') boardContainer: ElementRef;
+  boardWidth = 500;
   constructor(
     private _gameService: GameService,
     private _webSocketService: WebsocketService,
     private _gameStateService: GameStateService,
     private _userStateService: UserStateService,
+    private _lobbySocketService: LobbySocketService,
     private Router: Router
   ) {
     this._gameService = _gameService;
@@ -82,6 +86,22 @@ export class BoardComponent implements Board {
     this.create();
     // })
   }
+
+  ngAfterViewInit(): void {
+    //Called after ngAfterContentInit when the component's view has been initialized. Applies to components only.
+    //Add 'implements AfterViewInit' to the class.
+    // const width = Math.floor(this.boardContainer.nativeElement.offsetWidth);
+    // if (width > 400) {
+    //   this.boardWidth = width;
+    // }
+  }
+  // @HostListener('window:resize')
+  // resize(): void {
+  //   const width = Math.floor(this.boardContainer.nativeElement.offsetWidth);
+  //   if (width > 400) {
+  //     this.boardWidth = width;
+  //   }
+  // }
   create(): void {
     for (let i = 0; i < 8; i++) {
       this.game.board[i] = new Array<null>();
@@ -118,7 +138,7 @@ export class BoardComponent implements Board {
         if (this._gameStateService.isAI) {
           Minimax(this._gameStateService.game.board);
         } else {
-          this._webSocketService.emitLobby('Played Piece', {
+          this._lobbySocketService.emitLobby('Played Piece', {
             piece: this.cachedPiece,
             room: this.game.room,
             previousPieceLocation: this.previousPieceLocation,
@@ -148,9 +168,11 @@ export class BoardComponent implements Board {
     console.table(this.game.board);
   }
   leaveRoom(): void {
-    this._webSocketService.leaveRoom(this.currentPlayer);
+    console.log(this.currentPlayer);
+
+    this._lobbySocketService.leaveRoom(this.currentPlayer);
   }
   checkUsers(): void {
-    this._webSocketService.emitLobby('Game Users', this.game);
+    this._lobbySocketService.emitLobby('Game Users', this.game);
   }
 }

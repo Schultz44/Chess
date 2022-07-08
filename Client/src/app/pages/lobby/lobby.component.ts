@@ -1,17 +1,13 @@
-import {
-  Component,
-  OnInit,
-  ɵbypassSanitizationTrustStyle,
-} from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { Observable } from 'rxjs';
 import { PieceColor } from 'src/shared/models/piece';
 import { Player } from 'src/shared/models/player';
 import { Room } from 'src/shared/models/room';
 import { GameStateService } from 'src/shared/services/game-state.service';
+import { GameService } from 'src/shared/services/game.service';
+import { LobbySocketService } from 'src/shared/services/lobbySocket.service';
 import { UserStateService } from 'src/shared/services/user-state.service';
 import { WebsocketService } from 'src/shared/services/websocket.service';
-import { generateRandomstring } from 'src/shared/utilities/generateRandomString';
 
 @Component({
   selector: 'app-lobby',
@@ -21,11 +17,13 @@ import { generateRandomstring } from 'src/shared/utilities/generateRandomString'
 export class LobbyComponent implements OnInit {
   // username: string = 'User 1';
   username;
-  roomName = 'Room 1';
+  roomName = '';
   hasUserName: boolean;
 
   // currentRoom;
   // rooms: Room[] = [];
+  gameService: GameService;
+  isClickPlay = false;
   get rooms(): Room[] {
     return this._gameStateService.rooms;
   }
@@ -33,12 +31,17 @@ export class LobbyComponent implements OnInit {
     private _wsService: WebsocketService,
     private router: Router,
     private _gameStateService: GameStateService,
-    private _userStateService: UserStateService
+    private _userStateService: UserStateService,
+    private _gameService: GameService,
+    private _lobbySocketService: LobbySocketService
   ) {
     this.router = router;
-    this._userStateService = _userStateService;
-    this._gameStateService = _gameStateService;
-    this._wsService = _wsService;
+    // this._userStateService = _userStateService;
+    // this._gameStateService = _gameStateService;
+    // this._wsService = _wsService;
+    // this._lobbySocketService = _lobbySocketService;
+    this.gameService = _gameService;
+    console.log(this.gameService);
 
     console.log(this._userStateService.user);
     this.username = _userStateService.user.username;
@@ -63,7 +66,7 @@ export class LobbyComponent implements OnInit {
     } else this.router.navigate(['/login']);
   }
   joinLobby(): void {
-    this._wsService.createLobbyNamespace();
+    this._lobbySocketService.createLobbyNamespace();
     //Figure out how to get updated data from wsService
     this._gameStateService.rooms.forEach((room) => {
       console.log(room);
@@ -78,10 +81,10 @@ export class LobbyComponent implements OnInit {
   }
   // function() { }
   showRooms(): void {
-    this._wsService.getRooms();
+    this._lobbySocketService.getRooms();
   }
   leaveRooms(): void {
-    this._wsService.leaveRooms();
+    this._lobbySocketService.leaveRooms();
   }
   // leaveRoom() {
   //   this._wsService.leaveRoom()
@@ -96,7 +99,8 @@ export class LobbyComponent implements OnInit {
     });
     // localStorage.setItem('user', JSON.stringify(user));
     // localStorage.setItem('roomName', this.roomName);
-    this._wsService.createRoom(user, this.roomName).then(() => {
+
+    this._lobbySocketService.createRoom(user, this.roomName).then(() => {
       // this.currentRoom = this._wsService.currentRoom;
       // console.log(this.currentRoom);
       if (this._gameStateService.currentPlayer === undefined) {
@@ -117,7 +121,7 @@ export class LobbyComponent implements OnInit {
     });
     // localStorage.setItem('user', JSON.stringify(user));
     // localStorage.setItem('room', JSON.stringify(room));
-    this._wsService.joinRoom(user, room).then(() => {
+    this._lobbySocketService.joinRoom(user, room).then(() => {
       // console.log(JSON.parse(localStorage.getItem('user')),
       // JSON.parse(localStorage.getItem('room')));
       if (this._gameStateService.currentPlayer === undefined) {

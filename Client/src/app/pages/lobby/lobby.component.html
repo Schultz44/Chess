@@ -8,22 +8,42 @@
 
 <div class="relative" id="lobby">
   <section id="left-panel">
+    <div style="position: relative">
+      <app-basic-input
+        style="width: calc(100% - 50px); float: left"
+        (keyup.enter)="createRoom()"
+        [label]="'New Game:'"
+        [value]="roomName"
+        (emitValue)="roomName = $event"
+        [max]="20"
+        [width]="'100%'"
+        [background]="gameService.pageBackgroundColor"
+      ></app-basic-input>
+      <app-icon-button
+        [isClicked]="isClickPlay"
+        (emitClicked)="isClickPlay = $event; createRoom()"
+      >
+        <div
+          class="triangle {{
+            isClickPlay && !gameService.isMouseUp ? 'down' : ''
+          }}"
+        ></div>
+      </app-icon-button>
+    </div>
     <div class="lobby-list">
-      <input type="text" name="" id="" [(ngModel)]="roomName" />
-      <button (click)="createRoom()">Create new game</button>
-
-      <br />
-
-      <div *ngFor="let room of rooms" (click)="joinRoom(room)">
-        {{ room.roomName }}
-      </div>
+      <button (click)="showRooms()">Rooms</button>
+      <ul *ngFor="let room of rooms" (click)="joinRoom(room)">
+        {{
+          room.roomName
+        }}
+      </ul>
       <br />
       <button (click)="playAI()">Play AI</button>
     </div>
   </section>
   <section id="middle-panel">
     <div>{{ username }}</div>
-    <section id="board-container">
+    <section id="board-container" class="relative">
       <app-board></app-board>
     </section>
   </section>
@@ -37,9 +57,5 @@
   <!-- <button routerLink="/game" routerLinkActive="active">Start Game</button> -->
   <!-- <button (click)="function()">Websocket</button> -->
 
-  <br />
-  <button (click)="showRooms()">Rooms</button>
-
-  <br />
   <!-- <button (click)="leaveRoom()">Leave</button> -->
 </div>

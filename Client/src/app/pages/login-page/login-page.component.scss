@@ -6,6 +6,7 @@
   padding: 20px;
   border: 4px solid $color-even;
   background-color: $color-odd;
+  color: $color-even;
   z-index: 1;
   box-shadow: 7px 7px 0px 0px $color-even;
 }
@@ -72,6 +73,7 @@
   -webkit-transform-style: preserve-3d;
   transition: 0.25s;
   -webkit-transition: 0.25s;
+  background-color: $color-odd;
   &:hover {
     transform: rotateX(90deg);
     -webkit-transform: rotateX(90deg);
@@ -85,9 +87,18 @@
   height: 100%;
   position: absolute;
   box-sizing: border-box;
-  border: 3px solid $color-even;
+  border: 2px solid $color-even;
   font-family: "Source Sans Pro", sans-serif;
   font-size: 1.4rem;
+  // &::after {
+  //   content: "";
+  //   position: absolute;
+  //   width: calc(100% + 4px);
+  //   height: 100%;
+  //   left: 2px;
+  //   top: 3px;
+  //   background-color: $color-even;
+  // }
 }
 .face:nth-child(1) {
   color: $color-even;

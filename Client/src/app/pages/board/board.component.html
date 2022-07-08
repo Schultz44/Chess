@@ -3,33 +3,41 @@
 <button (click)="checkUsers()">Check users in game</button>
 <button (click)="leaveRoom()">Leave Game</button>
 <button (click)="test()">Test</button>
-<div class="board">
-  <div *ngFor="let y of game.board; let i = index" class="row">
-    <div
-      *ngFor="let piece of game.board[i]; let j = index"
-      class="cell {{ ((i + j) / 2) % 1 == 0 ? 'odd' : 'even' }} {{
-        piece?.defenseless ? 'open' : ''
-      }}"
-      (click)="clickedSquare(piece, i, j)"
-    >
-      <!-- [style.backgroundImage]="
-        piece?.y == i && piece?.x == j ? 'url(' + piece.image + ')' : 'unset'
-      " -->
-      <!-- Piece -->
-      <ng-container *ngIf="piece?.y == i && piece?.x == j; else emptyBoard">
-        <image-svg
-          *ngIf="piece.y == i && piece.x == j"
-          [color]="piece.color"
-          [path]="piece.image"
-          [index]="i.toString() + j.toString()"
-          [height]="'50px'"
-          [width]="'50px'"
-        ></image-svg>
-      </ng-container>
-      <!-- Empty Board -->
-      <ng-template #emptyBoard>
-        <div class="empty {{ piece === undefined ? 'open' : '' }}"></div>
-      </ng-template>
+<div #boardContainer class="relative board-container">
+  <div #board class="board" [style.width.px]="boardWidth">
+    <div *ngFor="let y of game.board; let i = index" class="row">
+      <div
+        *ngFor="let piece of game.board[i]; let j = index"
+        class="cell {{ ((i + j) / 2) % 1 == 0 ? 'odd' : 'even' }} {{
+          piece?.defenseless ? 'open' : ''
+        }}"
+        [style.width.px]="boardWidth / 8"
+        [style.height.px]="boardWidth / 8"
+        (click)="clickedSquare(piece, i, j)"
+      >
+        <!-- [style.backgroundImage]="
+          piece?.y == i && piece?.x == j ? 'url(' + piece.image + ')' : 'unset'
+        " -->
+        <!-- Piece -->
+        <ng-container *ngIf="piece?.y == i && piece?.x == j; else emptyBoard">
+          <image-svg
+            *ngIf="piece.y == i && piece.x == j"
+            [color]="piece.color"
+            [path]="piece.image"
+            [index]="i.toString() + j.toString()"
+            [height]="boardWidth / 8"
+            [width]="boardWidth / 8"
+          ></image-svg>
+        </ng-container>
+        <!-- Empty Board -->
+        <ng-template #emptyBoard>
+          <div
+            class="empty {{ piece === undefined ? 'open' : '' }}"
+            [style.width.px]="boardWidth / 8"
+            [style.height.px]="boardWidth / 8"
+          ></div>
+        </ng-template>
+      </div>
     </div>
   </div>
 </div>
