@@ -1,0 +1,8 @@
+<button class="btn-play" (mousedown)="isClicked = true; emitClicked.emit(true)">
+  <span
+    class="btn-face {{ isClicked && !gameService.isMouseUp ? 'down' : '' }}"
+  >
+    <ng-content class="content"></ng-content>
+  </span>
+  <span class="btn-backdrop"></span>
+</button>

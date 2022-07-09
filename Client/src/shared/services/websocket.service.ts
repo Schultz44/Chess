@@ -3,15 +3,10 @@ import { Injectable } from '@angular/core';
 import { io, Socket } from 'socket.io-client';
 import * as Rx from 'rxjs';
 import { environment } from '../../environments/environment';
-import { Observable, Observer } from 'rxjs';
-// import { Observable } from 'rxjs/internal/Observable';
-import { AnonymousSubject } from 'rxjs/internal/Subject';
+import { Observable } from 'rxjs';
 import { Subject } from 'rxjs/internal/Subject';
-import { generateRandomstring } from '../utilities/generateRandomString';
 import { Player } from '../models/player';
 import { Room } from '../models/room';
-import { Game } from '../models/board';
-import { Piece, PieceColor } from '../models/piece';
 import { GameStateService } from './game-state.service';
 import { UserStateService } from './user-state.service';
 import { ClientUser } from '../models/clientUser';
@@ -19,15 +14,10 @@ import { ClientUser } from '../models/clientUser';
 @Injectable({ providedIn: 'root' })
 export class WebsocketService {
   private socket: Socket; // socket that connects to our socket.io server
-  private lobbySocket: Socket;
   connectError: string;
   connected$: Observable<boolean>;
   private connectionSubject: Subject<boolean> = new Subject<boolean>();
-  constructor(
-    private _gameStateService: GameStateService,
-    private _userStateService: UserStateService
-  ) {
-    this._gameStateService = _gameStateService;
+  constructor(private _userStateService: UserStateService) {
     this._userStateService = _userStateService;
     this.connected$ = this.connectionSubject.asObservable();
   }
@@ -43,21 +33,24 @@ export class WebsocketService {
       console.log(data);
     });
   }
-  connectToSocket(username: string): Promise<boolean> {
+  connectUserToSocket(username: string): Promise<boolean> {
     return new Promise((resolve) => {
       this.connectError = undefined;
       this.socket.auth = new ClientUser({ username: username });
       this._userStateService.user = new ClientUser({ username: username });
       this.socket.connect();
-      this.socket.on('invalid_username', (err) => {
-        if (err) {
-          this.connectError = err;
+      this.socket.on('is_username_valid', (user) => {
+        if (!user.valid) {
+          this.connectError = user.err;
+          this.socket.off();
           this.socket.disconnect();
           this.connectionSubject.next(false);
           resolve(false);
         } else {
+          // this.socket.off();
+          // this.socket.disconnect();
           this.connectionSubject.next(true);
-          resolve(false);
+          resolve(true);
         }
       });
     });
@@ -65,101 +58,7 @@ export class WebsocketService {
   disconnectFromSocket(): void {
     this.socket.disconnect();
   }
-  getRooms(): void {
-    this.lobbySocket.emit('log rooms', {});
-  }
-  leaveRooms(): void {
-    this.lobbySocket.emit('reset all rooms', {});
-  }
-  leaveRoom(user: Player): void {
-    this.lobbySocket.emit('leave room', user);
-  }
-  async createRoom(user: Player, roomName: string): Promise<void> {
-    const results = new Promise<void>((resolve) => {
-      this.lobbySocket.emit(
-        'Create Room',
-        new Room({
-          player1: user,
-          roomName: roomName,
-          roomKey: generateRandomstring(8),
-        })
-      );
-      this.lobbySocket.on('Created Room', (data: Room) => {
-        this._gameStateService.game.room = new Room(data);
-        // console.log(this.game.room);
-        resolve();
-      });
-    });
-    await results;
-  }
-  async joinRoom(user: Player, room: Room): Promise<void> {
-    const results = new Promise<void>((resolve) => {
-      // room.users.push(user);
-      room.player2 = user;
-      this.lobbySocket.emit('Join Room', { room });
-      // console.log(room);
-      // console.log('------------------------------');
 
-      this._gameStateService.game.room = room;
-
-      resolve();
-    });
-    await results;
-  }
-  createLobbyNamespace(): void {
-    // if (this.lobbySocket) {
-    //     this.lobbySocket.close()
-    // }
-    // this.lobbySocket.auth = {t:'Hello'}
-    this.lobbySocket = io(environment.SOCKET_ENDPOINT + '/lobby');
-    this.lobbySocket.auth = [this.connectError];
-    this.lobbySocket.connect();
-    console.log(this.lobbySocket);
-    this.lobbySocket.on('connection', () => console.log('123'));
-
-    this.lobbySocket.on('Available Rooms', (data) => {
-      this._gameStateService.rooms = data;
-      console.log(data);
-    });
-    // This is placed here because the other users connected to the lobby arent connected to the room to see the existing rooms
-    this.lobbySocket.on('Room Events', (data) => {
-      this._gameStateService.rooms.push(data);
-      console.log('ROOM EVENTS');
-
-      console.log(this._gameStateService.rooms);
-    });
-
-    this.lobbySocket.on('Emit Opponent', (data: Room) => {
-      this._gameStateService.game.room.player2 = data.player2;
-      console.log(this._gameStateService.game.room.player2);
-    });
-
-    this.lobbySocket.on(
-      'Update Board State',
-      (data: { piece: Piece; room: Room; previousPieceLocation: { x; y } }) => {
-        console.log(data);
-        this._gameStateService.game.room = data.room;
-        this._gameStateService.game.board[data.piece.y][data.piece.x] =
-          data.piece;
-        this._gameStateService.game.board[data.previousPieceLocation.y][
-          data.previousPieceLocation.x
-        ] = null;
-        if (
-          data.room.player2.color == this._gameStateService.currentPlayer.color
-        ) {
-          this._gameStateService.currentPlayer = data.room.player2;
-        } else this._gameStateService.currentPlayer = data.room.player1;
-        // if (data.room.player2.turn) {
-        //     this._gameStateService.currentPlayer = data.room.player2
-        // }
-        // else this._gameStateService.currentPlayer = data.room.player1;
-        // this._gameStateService.changePlayersTurn();
-      }
-    );
-    this.lobbySocket.on('Game Users', (data) => {
-      console.log(data);
-    });
-  }
   // TODO
   // Make is so only 1 room can be created per connection
   // Only 2 connections can be in 1 room at a time
@@ -172,19 +71,10 @@ export class WebsocketService {
     });
   }
 
-  listenLobby(eventName: string): Observable<unknown> {
-    return new Observable((subscriber) => {
-      this.lobbySocket.on(eventName, (data) => {
-        subscriber.next(data);
-      });
-    });
-  }
   emit(eventName: string, data: unknown): void {
     this.socket.emit(eventName, data);
   }
-  emitLobby(eventName: string, data: unknown): void {
-    this.lobbySocket.emit(eventName, data);
-  }
+
   connect(): Rx.Subject<MessageEvent> {
     // this.socket = io(environment.ws_url);
     const observable = new Observable((observer) => {

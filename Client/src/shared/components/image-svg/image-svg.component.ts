@@ -37,6 +37,9 @@ export class ImageSvgComponent {
   writeSVGToDocument(svgText: string): void {
     const svg = document.createElement('div');
     svg.innerHTML = svgText;
-    document.getElementById(this.index.toString()).appendChild(svg);
+    // if (document.getElementById(this.index.toString())) {
+
+    document.getElementById(this.index.toString())?.appendChild(svg);
+    // }
   }
 }

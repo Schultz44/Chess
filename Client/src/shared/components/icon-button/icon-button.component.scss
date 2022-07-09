@@ -1,0 +1,44 @@
+@import "./src/styles.scss";
+
+.content {
+  background-color: red;
+}
+
+.btn-play {
+  position: relative;
+  border: unset;
+  border-radius: 100%;
+  height: 30px;
+  width: 30px;
+  margin: 0px 10px;
+  z-index: 1;
+  background-color: transparent;
+  cursor: pointer;
+  .btn-face {
+    z-index: -1;
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    border-radius: 100%;
+    top: 0;
+    left: 0;
+    background-color: $color-odd;
+    border: 2px solid $color-even;
+    transition: top 0.1s, left 0.1s;
+    &.down {
+      top: 3px;
+      left: 3px;
+    }
+  }
+  .btn-backdrop {
+    // content: "";
+    z-index: -2;
+    position: absolute;
+    height: calc(100% + 4px);
+    width: calc(100% + 4px);
+    border-radius: 100%;
+    top: 3px;
+    left: 3px;
+    background-color: $color-even;
+  }
+}

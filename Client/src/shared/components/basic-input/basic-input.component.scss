@@ -2,31 +2,32 @@
   position: relative;
   width: calc(100% - 10px);
   height: 30px;
-  font-size: 1.2rem;
-  border: 3px solid;
-  margin: 15px 0px;
+  // font-size: 1.2rem;
+  // border: 2px solid;
+  border-bottom: 2px solid;
+  // margin: 15px 0px;
   z-index: 2;
-  &::before {
-    position: absolute;
-    content: "";
-    width: 100%;
-    height: calc(100% + 4px);
-    top: -3px;
-    left: 3px;
-    background-color: rgb(185, 116, 48);
-    transition: width 0.2s 0.1s, height 0.2s;
-  }
+  // &::before {
+  //   position: absolute;
+  //   content: "";
+  //   width: 100%;
+  //   height: calc(100% + 3px);
+  //   top: -3px;
+  //   left: 3px;
+  //   background-color: rgb(185, 116, 48);
+  //   transition: width 0.2s 0.1s, height 0.2s;
+  // }
   &:focus-within,
   &.show {
     label {
       top: -23px;
-      height: 23px;
-      font-size: 1.2rem;
+      // height: 23px;
+      font-size: 1.3rem;
     }
-    &::before {
-      width: 0px;
-      height: 3px;
-    }
+    // &::before {
+    //   width: 0px;
+    //   height: 3px;
+    // }
   }
 }
 label {
@@ -37,7 +38,7 @@ label {
   padding: 0px 5px;
   font-size: 1.6rem;
   left: -3px;
-  top: -2px;
+  top: -3px;
   transition: top 0.3s ease-in-out, width 0.3s 0.15s, height 0.3s,
     font-size 0.3s;
 }

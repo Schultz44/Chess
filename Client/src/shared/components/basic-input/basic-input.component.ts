@@ -1,5 +1,4 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { FormControl } from '@angular/forms';
 
 @Component({
   selector: 'app-basic-input',
@@ -12,11 +11,16 @@ export class BasicInputComponent implements OnInit {
   @Input() value: unknown;
   @Input() optional = false;
   @Input() max = 20;
+  @Input() width: string;
   @Input() background = 'white';
+  @Input() borderColor = 'black';
   @Output() emitValue = new EventEmitter<unknown>();
   constructor() {
-    console.log(this.value);
+    null;
   }
 
-  ngOnInit() {}
+  ngOnInit(): void {
+    console.log(this.width);
+    null;
+  }
 }
