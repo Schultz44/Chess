@@ -74,7 +74,5 @@ export class ToasterComponent {
     toaster.removeChild(toaster.children[index]);
     this.toasters.splice(index, 1);
     clearTimeout(this.timers.get(index));
-    console.table(this.timers);
-    console.table(this.toasters);
   }
 }
