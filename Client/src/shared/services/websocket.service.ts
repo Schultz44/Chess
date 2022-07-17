@@ -14,9 +14,17 @@ import { ClientUser } from '../models/clientUser';
 @Injectable({ providedIn: 'root' })
 export class WebsocketService {
   private socket: Socket; // socket that connects to our socket.io server
-  connectError: string;
+
   connected$: Observable<boolean>;
-  private connectionSubject: Subject<boolean> = new Subject<boolean>();
+  connectionSubject: Subject<boolean> = new Subject<boolean>();
+  // connectionError: string;
+  private _auth: ClientUser;
+  public get auth(): { [key: string]: any } {
+    return this.socket.auth;
+  }
+  public set auth(value: { [key: string]: any }) {
+    this.socket.auth = value;
+  }
   constructor(private _userStateService: UserStateService) {
     this._userStateService = _userStateService;
     this.connected$ = this.connectionSubject.asObservable();
@@ -32,33 +40,32 @@ export class WebsocketService {
     this.socket.on('board-object', (data) => {
       console.log(data);
     });
-  }
-  connectUserToSocket(username: string): Promise<boolean> {
-    return new Promise((resolve) => {
-      this.connectError = undefined;
-      this.socket.auth = new ClientUser({ username: username });
-      this._userStateService.user = new ClientUser({ username: username });
-      this.socket.connect();
-      this.socket.on('is_username_valid', (user) => {
-        if (!user.valid) {
-          this.connectError = user.err;
-          this.socket.off();
-          this.socket.disconnect();
-          this.connectionSubject.next(false);
-          resolve(false);
-        } else {
-          // this.socket.off();
-          // this.socket.disconnect();
-          this.connectionSubject.next(true);
-          resolve(true);
-        }
-      });
+    this.socket.on('test', (data) => {
+      console.log(data);
     });
   }
+  // connectUser(name: string): Observable<boolean> {
+  //   return new Observable<boolean>((observer) => {
+  //     this._authService
+  //       .connectUserToSocket(this.socket, name)
+  //       .subscribe((valid) => {
+  //         this.connectionError = this._authService.connectionError;
+  //         this.connectionSubject.next(valid);
+  //         observer.next(valid);
+  //         observer.complete();
+  //       });
+  //   });
+  // }
   disconnectFromSocket(): void {
+    this.socket.off();
     this.socket.disconnect();
   }
-
+  off(socketName: string): void {
+    this.socket.off(socketName);
+  }
+  isConnected(): boolean {
+    return this.socket.connected;
+  }
   // TODO
   // Make is so only 1 room can be created per connection
   // Only 2 connections can be in 1 room at a time
@@ -71,11 +78,14 @@ export class WebsocketService {
     });
   }
 
-  emit(eventName: string, data: unknown): void {
+  emit(eventName: string, data: unknown = null): void {
     this.socket.emit(eventName, data);
   }
 
-  connect(): Rx.Subject<MessageEvent> {
+  connect(): void {
+    this.socket.connect();
+  }
+  $connect(): Rx.Subject<MessageEvent> {
     // this.socket = io(environment.ws_url);
     const observable = new Observable((observer) => {
       this.socket.on('board object', (data) => {

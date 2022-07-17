@@ -1,5 +1,11 @@
-import { Component, ElementRef, HostListener, ViewChild } from '@angular/core';
-import { Router } from '@angular/router';
+import {
+  Component,
+  ElementRef,
+  HostListener,
+  Input,
+  ViewChild,
+} from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
 import { ActivePiece, EnumPieceAction } from 'src/shared/logic/active-piece';
 import { GameLogic } from 'src/shared/logic/game-logic';
 import { Minimax } from 'src/shared/logic/minimax';
@@ -22,21 +28,29 @@ interface Board {
   styleUrls: ['./board.component.scss'],
 })
 export class BoardComponent implements Board {
+  @Input() inGame = false;
   @ViewChild('boardContainer') boardContainer: ElementRef;
   boardWidth = 500;
+  gameKey: any;
   constructor(
     private _gameService: GameService,
     private _webSocketService: WebsocketService,
     private _gameStateService: GameStateService,
     private _userStateService: UserStateService,
     private _lobbySocketService: LobbySocketService,
-    private Router: Router
+    private Router: Router,
+    private ActivatedRoute: ActivatedRoute
   ) {
     this._gameService = _gameService;
     this._webSocketService = _webSocketService;
     this._gameStateService = _gameStateService;
     this._userStateService = _userStateService;
     this.Router = Router;
+    // this.gameKey = this.ActivatedRoute.queryParams.subscribe((params) => {
+    //   console.log(params);
+
+    //   return params['game-key'];
+    // });
   }
   checked;
   // public board = new BoardModel();
@@ -152,7 +166,9 @@ export class BoardComponent implements Board {
     }
   }
   test(): void {
-    this._webSocketService.listen('Created Room').subscribe(console.log);
+    this._webSocketService.connect();
+    this._webSocketService.emit('rooms', null);
+    this._webSocketService.listen('test').subscribe(console.log);
   }
 
   l(): void {
@@ -174,5 +190,8 @@ export class BoardComponent implements Board {
   }
   checkUsers(): void {
     this._lobbySocketService.emitLobby('Game Users', this.game);
+  }
+  signOut(): void {
+    this.Router.navigate(['/lobby']);
   }
 }

@@ -1,8 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { Observable } from 'rxjs';
 import { PieceColor } from 'src/shared/models/piece';
 import { Player } from 'src/shared/models/player';
 import { Room } from 'src/shared/models/room';
+import { AuthService } from 'src/shared/services/auth.service';
 import { GameStateService } from 'src/shared/services/game-state.service';
 import { GameService } from 'src/shared/services/game.service';
 import { LobbySocketService } from 'src/shared/services/lobbySocket.service';
@@ -24,6 +26,7 @@ export class LobbyComponent implements OnInit {
   // rooms: Room[] = [];
   gameService: GameService;
   isClickPlay = false;
+  inGame: boolean;
   get rooms(): Room[] {
     return this._gameStateService.rooms;
   }
@@ -33,7 +36,8 @@ export class LobbyComponent implements OnInit {
     private _gameStateService: GameStateService,
     private _userStateService: UserStateService,
     private _gameService: GameService,
-    private _lobbySocketService: LobbySocketService
+    private _lobbySocketService: LobbySocketService,
+    private _authService: AuthService
   ) {
     this.router = router;
     // this._userStateService = _userStateService;
@@ -41,9 +45,9 @@ export class LobbyComponent implements OnInit {
     // this._wsService = _wsService;
     // this._lobbySocketService = _lobbySocketService;
     this.gameService = _gameService;
-    console.log(this.gameService);
+    // console.log(this.gameService);
 
-    console.log(this._userStateService.user);
+    // console.log(this._userStateService.user);
     this.username = _userStateService.user.username;
 
     // this._wsService.connected$.subscribe(bool => {
@@ -89,7 +93,17 @@ export class LobbyComponent implements OnInit {
   // leaveRoom() {
   //   this._wsService.leaveRoom()
   // }
-
+  // $signOut(): Observable<boolean> {
+  signOut() {
+    // return new Observable<boolean>((observer) => {
+    //   // this._wsService.connect();
+    //   // this._wsService.emit('t', 'TEST WORKS!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
+    // });
+    this._authService.signOutUser();
+    // this._lobbySocketService.emitLobby('log_rooms', (data) => {
+    //   console.log(data);
+    // });
+  }
   createRoom = (): void => {
     // const r = await this._wsService.createRoom(this.username, this.roomName);
     const user = new Player({
@@ -100,17 +114,30 @@ export class LobbyComponent implements OnInit {
     // localStorage.setItem('user', JSON.stringify(user));
     // localStorage.setItem('roomName', this.roomName);
 
-    this._lobbySocketService.createRoom(user, this.roomName).then(() => {
-      // this.currentRoom = this._wsService.currentRoom;
-      // console.log(this.currentRoom);
-      if (this._gameStateService.currentPlayer === undefined) {
-        this._gameStateService.currentPlayer =
-          this._gameStateService.game.room.player1;
-      }
-      this.router.navigate([
-        `./game/${this._gameStateService.game.room.roomKey}`,
-      ]);
-    });
+    this._lobbySocketService
+      .$createRoom(user, this.roomName)
+      .subscribe((isCreated) => {
+        // this.currentRoom = this._wsService.currentRoom;
+        // console.log(this.currentRoom);
+        console.log(
+          'last:: :: :: :: ',
+          this._gameStateService.game.room.player1
+        );
+
+        if (this._gameStateService.currentPlayer === undefined) {
+          this._gameStateService.currentPlayer =
+            this._gameStateService.game.room.player1;
+        }
+
+        if (isCreated) {
+          console.log(this._gameStateService.game);
+          this.inGame = true;
+          this.router.navigate([
+            `./game/${this._gameStateService.game.room.roomKey}`,
+          ]);
+        }
+      });
+    // subscription.unsubscribe();
   };
 
   joinRoom(room: Room): void {

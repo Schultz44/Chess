@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { observable, Observable } from 'rxjs';
 import { io, Socket } from 'socket.io-client';
 import { environment } from 'src/environments/environment';
 import { ToasterService } from '../components/toasters/toaster.service';
@@ -14,7 +14,7 @@ import { GameStateService } from './game-state.service';
 })
 export class LobbySocketService {
   private lobbySocket: Socket;
-  connectError: any;
+  connectError: string;
   constructor(
     private _gameStateService: GameStateService,
     private _toasterService: ToasterService
@@ -28,51 +28,108 @@ export class LobbySocketService {
     this.lobbySocket.emit('reset all rooms', {});
   }
   leaveRoom(user: Player): void {
-    console.log(JSON.stringify(user));
-    this.lobbySocket.emit('leave room', user);
+    // console.log(JSON.stringify(user));
+    console.log(user);
+    this.lobbySocket.emit('leaveRoom', user);
   }
-  private async validateRoomName(): Promise<boolean> {
-    const results = new Promise<boolean>((resolve) => {
+  private $validateRoomName(): Observable<boolean> {
+    const results = new Observable<boolean>((observer) => {
       this.lobbySocket.on('isRoomNameValid', (message) => {
-        this._toasterService.showError(message);
+        if (message) {
+          this._toasterService.showError(message);
+        }
         this.lobbySocket.off('isRoomNameValid');
-        resolve(false);
+        observer.next(message ? false : true);
+        observer.complete();
       });
-      resolve(true);
     });
-    return await results;
+    return results;
   }
-  async createdRoom(): Promise<void> {
-    const result = new Promise<void>((resolve) => {
+  $createdRoom(): Observable<void> {
+    return new Observable<void>((observer) => {
       this.lobbySocket.on('createdRoom', (data: Room) => {
-        console.log('CREATED ROOM :: ', data);
+        console.log(data);
+        this._gameStateService.game.room = data;
         this.lobbySocket.off('createdRoom');
-        resolve();
+        observer.next();
+        observer.complete();
       });
     });
-    return await result;
+    // return result;
   }
-  async createRoom(user: Player, roomName: string): Promise<void> {
-    const results = new Promise<void>((resolve) => {
+  /**
+   * @param user
+   * @param roomName
+   * @returns Promise<boolean>
+   * Connects to the createRoom socket.
+   * Sets the _gameStateService.game.room object if valid room name
+   */
+  // async createRoom(user: Player, roomName: string): Promise<boolean> {
+  //   const results = new Promise<boolean>((resolve) => {
+  //     this.lobbySocket.emit(
+  //       'createRoom',
+  //       new Room({
+  //         player1: user,
+  //         roomName: roomName,
+  //         roomKey: generateRandomstring(8),
+  //       })
+  //     );
+  //     this.$validateRoomName().subscribe((valid) => {
+  //       if (valid) {
+  //         console.log(valid);
+
+  //         this.$createdRoom().subscribe(
+  //           () => {
+  //             console.log('CREATED ROOM');
+  //             resolve(true);
+  //           },
+  //           () => resolve(false)
+  //         );
+  //       } else resolve(false);
+  //     });
+  //   });
+  //   return await results;
+  // }
+  /**
+   * @param user
+   * @param roomName
+   * @returns Observable<boolean>
+   * Connects to the createRoom socket.
+   * Sets the _gameStateService.game.room object if valid room name
+   */
+  $createRoom(user: Player, roomName: string): Observable<boolean> {
+    return new Observable<boolean>((observer) => {
       this.lobbySocket.emit(
-        'Create Room',
+        'createRoom',
         new Room({
           player1: user,
           roomName: roomName,
           roomKey: generateRandomstring(8),
         })
       );
-      this.validateRoomName().then((valid) => {
+      this.$validateRoomName().subscribe((valid) => {
+        console.log(valid);
+
         if (valid) {
-          this.createdRoom().then(() => {
-            resolve();
-          });
-        } else resolve();
-        // resolve();
+          this.$createdRoom().subscribe(
+            () => {
+              observer.next(true);
+              observer.complete();
+            },
+            () => {
+              observer.next(false);
+              observer.complete();
+            }
+          );
+        } else {
+          observer.next(false);
+          observer.complete();
+        }
       });
     });
-    await results;
+    // return results;
   }
+
   listenLobby(eventName: string): Observable<unknown> {
     return new Observable((subscriber) => {
       this.lobbySocket.on(eventName, (data) => {
@@ -88,9 +145,6 @@ export class LobbySocketService {
       // room.users.push(user);
       room.player2 = user;
       this.lobbySocket.emit('Join Room', { room });
-      // console.log(room);
-      // console.log('------------------------------');
-
       this._gameStateService.game.room = room;
 
       resolve();
@@ -105,12 +159,12 @@ export class LobbySocketService {
     this.lobbySocket = io(environment.SOCKET_ENDPOINT + '/lobby');
     this.lobbySocket.auth = [this.connectError];
     this.lobbySocket.connect();
-    console.log(this.lobbySocket);
+    // console.log(this.lobbySocket);
     this.lobbySocket.on('connection', () => console.log('123'));
 
     this.lobbySocket.on('Available Rooms', (data) => {
       this._gameStateService.rooms = data;
-      console.log(data);
+      // console.log(data);
     });
     // This is placed here because the other users connected to the lobby arent connected to the room to see the existing rooms
     this.lobbySocket.on('Room Events', (data) => {
