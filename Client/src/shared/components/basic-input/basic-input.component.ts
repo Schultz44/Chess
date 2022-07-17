@@ -20,7 +20,6 @@ export class BasicInputComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    console.log(this.width);
     null;
   }
 }

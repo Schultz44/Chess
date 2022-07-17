@@ -43,13 +43,14 @@
   </section>
   <section id="middle-panel">
     <div>{{ username }}</div>
-    <section id="board-container" class="relative">
-      <app-board></app-board>
+    <section id="board-section" class="relative">
+      <app-board [inGame]=""></app-board>
     </section>
   </section>
   <section id="right-panel">
     <section class="move-list">
       <div>Move History</div>
+      <button (click)="signOut()">Sign Out</button>
     </section>
   </section>
 
