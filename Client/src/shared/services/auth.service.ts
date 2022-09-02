@@ -22,27 +22,33 @@ export class AuthService {
     this._wsService.auth = new ClientUser({
       username: username,
     });
-    this._wsService.connect();
+    if (!this._wsService.isConnected()) {
+      this._wsService.connect();
+    }
     return new Observable<boolean>((observer) => {
-      this.$isUsernameValid().subscribe((valid) => {
-        if (valid) {
-          this._wsService.connectionSubject.observers.forEach((obs) =>
-            obs.complete()
-          );
+      this.$isUsernameValid(this._wsService.auth.username).subscribe(
+        (valid) => {
+          if (valid) {
+            this._wsService.connectionSubject.observers.forEach((obs) =>
+              obs.complete()
+            );
+          }
+          observer.next(valid);
+          observer.complete();
         }
-        observer.next(valid);
-        observer.complete();
-      });
+      );
     });
   }
 
-  private $isUsernameValid(): Observable<boolean> {
+  private $isUsernameValid(username: string): Observable<boolean> {
     return new Observable<boolean>((observer) => {
-      this._wsService.listen('is_username_valid').subscribe((data: any) => {
-        this._wsService.disconnectFromSocket();
+      this._wsService.emit('is_username_valid', username);
+      this._wsService.once('is_username_valid').subscribe((data: any) => {
         if (!data.valid) {
           this.connectionError = data.err;
           this._wsService.connectionSubject.next(false);
+          // this._wsService.offAll();
+          this._wsService.disconnectFromSocket();
           observer.next(false);
           observer.complete();
         } else {
@@ -65,11 +71,11 @@ export class AuthService {
     // this._wsService.connect();
     // console.log(this._wsService.isConnected());
 
-    this._wsService.disconnectFromSocket();
+    this._wsService.emit('sign_out', null);
 
-    // this._wsService.emit('signOut', null);
-    // this._wsService.disconnectFromSocket();
+    this._wsService.disconnectFromSocket();
     this.router.navigate(['./login']);
+    // this._wsService.disconnectFromSocket();
     // });
     // });
   }

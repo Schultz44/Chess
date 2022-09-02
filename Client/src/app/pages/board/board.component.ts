@@ -168,7 +168,7 @@ export class BoardComponent implements Board {
   test(): void {
     this._webSocketService.connect();
     this._webSocketService.emit('rooms', null);
-    this._webSocketService.listen('test').subscribe(console.log);
+    this._webSocketService.on('test').subscribe(console.log);
   }
 
   l(): void {
