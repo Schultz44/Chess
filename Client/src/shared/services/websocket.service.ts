@@ -63,6 +63,9 @@ export class WebsocketService {
   off(socketName: string): void {
     this.socket.off(socketName);
   }
+  offAll(): void {
+    this.socket.off();
+  }
   isConnected(): boolean {
     return this.socket.connected;
   }
@@ -70,9 +73,16 @@ export class WebsocketService {
   // Make is so only 1 room can be created per connection
   // Only 2 connections can be in 1 room at a time
   // Setup a way to leave a room
-  listen(eventName: string): Observable<unknown> {
+  on(eventName: string): Observable<unknown> {
     return new Observable((subscriber) => {
       this.socket.on(eventName, (data) => {
+        subscriber.next(data);
+      });
+    });
+  }
+  once(eventName: string): Observable<unknown> {
+    return new Observable((subscriber) => {
+      this.socket.once(eventName, (data) => {
         subscriber.next(data);
       });
     });
