@@ -12,9 +12,10 @@ import { UserStateService } from 'src/shared/services/user-state.service';
 import { WebsocketService } from 'src/shared/services/websocket.service';
 
 @Component({
-  selector: 'app-lobby',
-  templateUrl: './lobby.component.html',
-  styleUrls: ['./lobby.component.scss'],
+    selector: 'app-lobby',
+    templateUrl: './lobby.component.html',
+    styleUrls: ['./lobby.component.scss'],
+    standalone: false
 })
 export class LobbyComponent implements OnInit {
   // username: string = 'User 1';

@@ -16,18 +16,15 @@ import { IHashNumber } from 'src/shared/models/hash';
 import { IToaster } from 'src/shared/models/toaster';
 
 @Component({
-  selector: 'app-custom-toaster',
-  animations: [
-    trigger('state', [
-      state('open', style({ transform: 'translateY(0%)' })),
-      state(
-        'void, close',
-        style({ transform: 'translateY(100%)', opacity: 0 })
-      ),
-      transition('* => *', animate('300ms ease-in')),
-    ]),
-  ],
-  template: `
+    selector: 'app-custom-toaster',
+    animations: [
+        trigger('state', [
+            state('open', style({ transform: 'translateY(0%)' })),
+            state('void, close', style({ transform: 'translateY(100%)', opacity: 0 })),
+            transition('* => *', animate('300ms ease-in')),
+        ]),
+    ],
+    template: `
     <div
       *ngFor="let toaster of toasters; let i = index"
       class="toaster {{ toaster.toaster.type }}"
@@ -37,7 +34,8 @@ import { IToaster } from 'src/shared/models/toaster';
       <span class="message">{{ toaster.toaster.message }}</span>
     </div>
   `,
-  styleUrls: ['./toaster.component.scss'],
+    styleUrls: ['./toaster.component.scss'],
+    standalone: false
 })
 export class ToasterComponent {
   @HostBinding('state')

@@ -42,6 +42,7 @@ export class AuthService {
 
   private $isUsernameValid(username: string): Observable<boolean> {
     return new Observable<boolean>((observer) => {
+      console.log(';');
       this._wsService.emit('is_username_valid', username);
       this._wsService.once('is_username_valid').subscribe((data: any) => {
         if (!data.valid) {

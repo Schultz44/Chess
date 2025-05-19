@@ -1,9 +1,10 @@
 import { Component, Input, OnInit } from '@angular/core';
 
 @Component({
-  selector: 'image-svg',
-  templateUrl: './image-svg.component.html',
-  styleUrls: ['./image-svg.component.scss'],
+    selector: 'image-svg',
+    templateUrl: './image-svg.component.html',
+    styleUrls: ['./image-svg.component.scss'],
+    standalone: false
 })
 export class ImageSvgComponent {
   @Input() width = '100px';
