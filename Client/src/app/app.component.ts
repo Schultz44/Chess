@@ -5,9 +5,10 @@ import { GameService } from 'src/shared/services/game.service';
 import { WebsocketService } from 'src/shared/services/websocket.service';
 
 @Component({
-  selector: 'app-root',
-  templateUrl: './app.component.html',
-  styleUrls: ['./app.component.scss'],
+    selector: 'app-root',
+    templateUrl: './app.component.html',
+    styleUrls: ['./app.component.scss'],
+    standalone: false
 })
 export class AppComponent {
   title = 'Chess';

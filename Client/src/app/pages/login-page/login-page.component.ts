@@ -13,9 +13,10 @@ import { UserStateService } from 'src/shared/services/user-state.service';
 import { WebsocketService } from 'src/shared/services/websocket.service';
 
 @Component({
-  selector: 'app-login-page',
-  templateUrl: './login-page.component.html',
-  styleUrls: ['./login-page.component.scss'],
+    selector: 'app-login-page',
+    templateUrl: './login-page.component.html',
+    styleUrls: ['./login-page.component.scss'],
+    standalone: false
 })
 export class LoginPageComponent {
   isGuest = true;
