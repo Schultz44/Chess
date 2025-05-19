@@ -63,7 +63,6 @@ export class LoginPageComponent {
      * subscribe to the WebSocketService Subject to listen for the stream of data
      * connectionSubject.next() will trigger the below logic
      */
-
     this._authService.connectUserToSocket(this.guestName).subscribe(() => {
       null;
     });
