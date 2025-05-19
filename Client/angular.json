@@ -74,18 +74,18 @@
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
-            "browserTarget": "Chess:build"
+            "buildTarget": "Chess:build"
           },
           "configurations": {
             "production": {
-              "browserTarget": "Chess:build:production"
+              "buildTarget": "Chess:build:production"
             }
           }
         },
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "Chess:build"
+            "buildTarget": "Chess:build"
           }
         },
         "test": {
